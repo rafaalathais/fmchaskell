@@ -25,7 +25,7 @@ eight = S seven
 
 -- addition
 (+) :: Nat -> Nat -> Nat
-n + O   = n
+n + O = n
 n + S m = S (n + m)
 
  -- syntactic associativity: L
@@ -34,18 +34,22 @@ infixl 6 +
 
 -- Output: O means False, S O means True
 isZero :: Nat -> Nat
-isZero = undefined
+isZero O = S O
+isZero (S _) = O
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O = O
+pred (S n) = n
 
 -- Output: O means False, S O means True
 even :: Nat -> Nat
-even = undefined
+even O = S O
+even (S n) = odd n
 
 odd :: Nat -> Nat
-odd = undefined
+odd O = O
+odd (S n) = even n
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
