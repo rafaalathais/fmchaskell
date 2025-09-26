@@ -74,8 +74,7 @@ infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-S _ ^ O = S O 
-O ^ S _ = O
+_ ^ O = S O 
 n ^ S m = n ^ m * n
 
 infixr 8 ^
@@ -91,6 +90,7 @@ n / S m = case n -* S m of
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
+O % _ = O
 _ % O = undefined
 n % S m = n -* ((n / S m) * S m)
     
@@ -102,10 +102,11 @@ n % S m = n -* ((n / S m) * S m)
 (|||) = divides
 
 divides :: Nat -> Nat -> Nat
-divides O (S _ ) = O
-divides n (S m) = case n % S m of
-                O -> S O
-                _ -> O
+divides _ O = S O
+divides O _ = O
+divides n (S m) = case S m % n of  
+                O -> S O     -- two divides four - S O
+                _ -> O       -- four dives two - O
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
