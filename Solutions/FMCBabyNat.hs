@@ -99,11 +99,11 @@ n % S m = n -* ((n / S m) * S m)
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-(|||) = devides
+(|||) = divides
 
-devides :: Nat -> Nat -> Nat
-devides O (S _ ) = O
-devides n (S m) = case n % S m of
+divides :: Nat -> Nat -> Nat
+divides O (S _ ) = O
+divides n (S m) = case n % S m of
                 O -> S O
                 _ -> O
 
