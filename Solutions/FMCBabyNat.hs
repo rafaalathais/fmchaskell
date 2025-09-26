@@ -45,42 +45,55 @@ pred (S n) = n
 -- Output: O means False, S O means True
 even :: Nat -> Nat
 even O = S O
-even (S n) = odd n
+even (S O) = O
+even (S (S n)) = even n
 
 odd :: Nat -> Nat
 odd O = O
-odd (S n) = even n
+odd (S O) = S O
+odd (S (S n)) = odd n
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
 -- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus = undefined
+monus O  _ = O
+monus n O = n
+monus (S n) (S m) = monus n m
 
 (-*) :: Nat -> Nat -> Nat
 (-*) = monus
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) = undefined
+O * _ = O
+(S n) * m = n * m + m 
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) = undefined
+S _ ^ O = S O 
+O ^ S _ = O
+n ^ S m = n ^ m * n
 
--- decide: infix? ? ^
+-- decide: 
+infixr 8 ^
 
 -- quotient
 (/) :: Nat -> Nat -> Nat
-(/) = undefined
+_ / O = undefined
+n / S m = case n -* S m of
+                O -> if n == S m then S O else O  
+                _ -> S ((n -* S m) / S m)
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-(%) = undefined
-
+O % _ = O
+_ % O = undefined
+n % S m = n -* ((n / S m) * S m)
+    
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
 -- and then define `devides` as a synonym to it
@@ -97,7 +110,8 @@ absDiff = undefined
 (|-|) = absDiff
 
 factorial :: Nat -> Nat
-factorial = undefined
+factorial O = S O
+factorial (S n) = factorial n * S n
 
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
