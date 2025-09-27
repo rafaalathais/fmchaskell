@@ -50,8 +50,7 @@ even (S (S n)) = even n
 
 odd :: Nat -> Nat
 odd O = O
-odd (S O) = S O
-odd (S (S n)) = odd n
+odd (S n) = even n
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
@@ -99,14 +98,16 @@ n % S m = n -* ((n / S m) * S m)
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-(|||) = divides
+(|||) _ O = S O   -- two divide zero - S O
+(|||) O _ = O     -- zero divide five - O
+(|||) n (S m) = case S m % n of  
+                O -> S O     -- two divide four - S O
+                _ -> O       -- four dive two - O
+
 
 divides :: Nat -> Nat -> Nat
-divides _ O = S O
-divides O _ = O
-divides n (S m) = case S m % n of  
-                O -> S O     -- two divides four - S O
-                _ -> O       -- four dives two - O
+divides = (|||)
+
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
@@ -134,7 +135,6 @@ lo :: Nat -> Nat -> Nat
 lo O _ = undefined
 lo _ O = undefined
 lo (S O) _ = undefined
-lo (S _) (S O) = O
 lo n (S m) = case S m -* n of 
                   O -> case n -* S m of 
                       O -> S O
