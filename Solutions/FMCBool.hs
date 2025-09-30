@@ -51,15 +51,14 @@ infixr 3 &&
 
 -- disjunction (OR)
 (||) :: Bool -> Bool -> Bool
-True || x = True
 False || False = False
-x || True = True
+_ || _ = True
 
 infixr 2 ||
 
 -- NAND (Sheffer stroke)
 (/|\) :: Bool -> Bool -> Bool
-False /|\ x = True
+False /|\ _ = True
 True /|\ True = False
 True /|\ False = True
 
@@ -67,45 +66,46 @@ infixr 2 /|\
 
 -- NOR (aka: Peirce arrow or Quine dagger)
 (\|/) :: Bool -> Bool -> Bool
-(\|/) = undefined
+False \|/ False = True
+True \|/ _ = False
+_ \|/ True = False
+
 
 infixr 2 \|/
 
 -- XOR (exclusive disjunction)
 (<=/=>) :: Bool -> Bool -> Bool
-x <=/=> y = case fromEnum x of
-                1 -> case fromEnum y of
-                    1 -> False
-                    0 -> True
-                0 -> case fromEnum y of
-                    0 -> False
-                    1 -> True
+True  <=/=> False = True
+False <=/=> True  = True
+_  <=/=>  _  = False
 
 infixr 2 <=/=>
 
 -- boolean negation
 not :: Bool -> Bool
-not = undefined
+not True = False
+not False = True
 
 -- if-then-else expression
 ifThenElse :: Bool -> a -> a -> a
-ifThenElse = undefined
+ifThenElse True x y = x
+ifThenElse False x y = y 
 
 -- logical "implies"
 (==>) :: Bool -> Bool -> Bool
-(==>) = undefined
+x ==> y = not x || y
 
 infixr 1 ==>
 
 -- logical "implied by"
 (<==) :: Bool -> Bool -> Bool
-(<==) = undefined
+x <== y = y ==> x
 
 infixl 1 <==
 
 -- logical equivalence
 (<=>) :: Bool -> Bool -> Bool
-(<=>) = undefined
+x <=> y = (x ==> y) && (y ==> x)
 
 infixr 1 <=>
 
