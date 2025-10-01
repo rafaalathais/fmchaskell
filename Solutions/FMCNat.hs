@@ -140,11 +140,11 @@ infixl 7 <*>
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
 pow _  O = S O
-pow n  (S m) = pow n m <*> n
+pow n  (S m) = (pow n m) <*> n
 
 exp :: Nat -> Nat -> Nat
 exp _  O = S O
-exp n  (S m) = exp n m <*> n
+exp n  (S m) = (exp n m) <*> n
 
 (<^>) :: Nat -> Nat -> Nat
 (<^>) = pow -- ou <^> = exp
