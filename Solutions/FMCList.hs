@@ -1,4 +1,6 @@
 {-# LANGUAGE GADTs #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use foldr" #-}
 
 module FMCList where
 
@@ -58,28 +60,36 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 -}
 
 head :: [a] -> a
-head = undefined
+head [] = error "Nil"
+head (x:_) = x
 
 tail :: [a] -> [a]
-tail = undefined
+tail (_: xs) = xs
+tail [] = error "Nil"
 
 null :: [a] -> Bool
-null = undefined
+null [] = True
+null (_:_) = False
 
 length :: Integral i => [a] -> i
-length = undefined
+length [] = 0
+length (_:xs) = length xs + 1
 
 sum :: Num a => [a] -> a
-sum = undefined
+sum [] = 0
+sum (x:xs) = x + sum xs
 
 product :: Num a => [a] -> a
-product = undefined
+product [] = 0
+product (x:xs) = x * (product xs)
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse [] = []
+reverse xs = reverse (tail xs) ++ [head xs]
 
 (++) :: [a] -> [a] -> [a]
-(++) = undefined
+[] ++ ys = ys
+(x : xs) ++ ys = x : (xs ++ ys)
 
 -- right-associative for performance!
 -- (what?!)
