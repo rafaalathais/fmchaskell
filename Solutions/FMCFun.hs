@@ -12,17 +12,17 @@ import Prelude hiding
 
 -- curry takes a "traditional" binary function
 -- and returns its currified version
-curry :: undefined
-curry = undefined
+curry :: ((a,b,c) -> d) -> (a -> b -> c -> d)
+curry f x y z = f (x, y, z)
 
 -- uncurry takes a currified function
 -- and returns its "traditional" binary version
-uncurry :: undefined
-uncurry = undefined
+uncurry :: (a -> b -> c -> d) -> ((a,b,c) -> d)
+uncurry f (x, y, z) = f x y z
 
 -- flip takes a (currified) binary function
 -- and returns one that behaves the same but takes its arguments in the opposite order
-
+flip :: 
 -- (.) takes two composable functions and returns their composition
 
 -- (.>) is composition but in diagramatic notation (should be ; but Haskell forbids)
