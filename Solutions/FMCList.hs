@@ -97,7 +97,8 @@ infixr 5 ++
 
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
-snoc = undefined
+snoc x [] = [x]
+snoc x (y:ys) = y:snoc x ys
 
 (<:) :: [a] -> a -> [a]
 (<:) = flip snoc
@@ -112,58 +113,152 @@ xs +++ (y:ys) = (xs +++ [y]) +++ ys
 -- (hmm?!)
 infixl 5 +++
 
--- minimum :: Ord a => [a] -> a
--- maximum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+minimum [x] = x
+minimum (x:xs)
+  | x < minimum xs = x
+  |otherwise = minimum xs
 
--- take
--- drop
+maximum :: Ord a => [a] -> a
+maximum [x] = x
+maximum (x:xs)
+  | x > minimum xs = x
+  |otherwise = minimum xs
 
--- takeWhile
--- dropWhile
+take :: Int -> [a] -> [a]
+take 0 _ = []
+take _ [] = []
+take i (x:xs) = x: take (i-1) xs
 
--- tails
--- init
--- inits
+drop :: Int -> [a] -> [a]
+drop _ [] = []
+drop 0 xs = xs
+drop i (_:xs) = drop (i-1) xs
 
--- subsequences
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile _ [] = []
+takeWhile f (x:xs)
+  |f x = x:takeWhile f xs
+  |otherwise = []
 
--- any
--- all
+dropWhile :: (b -> Bool) -> [b] -> [b]
+dropWhile _ [] = []
+dropWhile f (x:xs)
+  |f x = dropWhile y xs
+  |otherwise = x:xs
 
--- and
--- or
+tails :: [a] -> [[a]] --todas as caudas/rabos
+tails [] = [[]]
+tails (_:xs) = [xs] ++ tails (tail xs) 
 
--- concat
+init :: [a] -> [a]
+init [] = error "nil"
+init [x] = []
+init (x:xs) = x:init xs
+
+inits :: [a] -> [[a]]
+inits [] = [[]]
+inits xs = inits (init xs) ++ [xs]
+  --L.inits [1,2,2,4]  [[],[1],[1,2],[1,2,2],[1,2,2,4]]
+
+subsequences :: [a] -> [[a]]
+subsequences [] = [[]]
+
+any :: (a -> Bool) -> [a] -> Bool
+any _ [] = False
+any f (x:xs) = f x || any f xs
+
+all :: (a -> Bool) -> [a] -> Bool
+all _ [] = True --nehuma contradição
+all f (x:xs) = f x && all f xs
+
+and :: [Bool] -> Bool
+and [] = True
+and (x:xs) = x && and xs
+
+or :: [Bool] -> Bool
+or [] = False
+or (x:xs) = x || or xs
+
+concat :: [[a]] -> [a]
+concat [] = []
+concat (x:xs) = x ++ concat xs
 
 -- elem using the funciton 'any' above
+elem :: Eq a => a -> [a] -> Bool
+elem y (x:xs) = any (x==y) xs
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
+elem' :: Eq a => a -> [a] -> Bool
+elem y (x:xs) = (y == x) || elem y xs
 
--- (!!)
+(!!) :: [a] -> Int -> a
+[] !! _ = error "Nil"
+(x:_) !! 0= x 
+(_:xs) !! i = xs !! (i-1)
 
--- filter
--- map
+filter :: (a-> Bool) -> [a] -> [a]
+filter f [] = []
+filter f (x:xs)
+  |f x = x:filter f xs
+  |otherwise = filter f xs
 
--- cycle
--- repeat
--- replicate
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (x:xs) = f x : map f xs
 
--- isPrefixOf
--- isInfixOf
--- isSuffixOf
+cycle :: [a] -> [a]
+cycle = error "Nil"
+cycle xs = xs ++ cycle xs
 
--- zip
+repeat :: a -> [a]
+repeat x = x :repeat x
+
+replicate :: Int -> a -> [a]
+replicate 0 _ = []
+replicate i x = x:replicate (i-1) x
+
+isPrefixOf :: Eq a => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf _ [] = False
+isPrefixOf (x:xs) (y:ys) = (x==y) && isPrefixOf xs ys
+
+isInfixOf :: Eq a => [a] -> [a] -> Bool
+isInfixOf xs ys 
+  | lenght xs > length ys = False 
+  |isPrefiOf xs ys = True
+  |otherwise = isInfixOf xs (tails ys) -- vai para o proximo
+
+isSuffixOf :: Eq a => [a] -> [a] -> Bool
+isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
+
+zip :: [a] -> [b] -> [(a, b)]
+zip [] _ = []
+zip _ [] = []
+zip (x:xs) (y:ys) = (x,y):zip xs ys
+
+
 -- zipWith
 
--- intercalate
--- nub
+intercalate :: [a] -> [[a]] -> [a]
+intercalate _ [] = []
+intercalate _[x] = x
+intercalate ys (x:xs) = x ++ ys ++ intercalate ys xs
 
--- splitAt
+nub :: Eq a => [a] -> [a]
+nub [] = []
+nub (x:xs) = x:nub(filter (/=x) xs)
+
+splitAt :: Int -> [a] -> ([a], [a])
+splitAt 0 xs = ([], xs)
+splitAt _ [] = ([],[])
 -- what is the problem with the following?:
 -- splitAt n xs  =  (take n xs, drop n xs)
 
--- break
+break :: (a->Bool) -> [a] -> [a]
+break _ [] = ([], [])
+
 
 -- lines
 -- words
@@ -174,7 +269,11 @@ infixl 5 +++
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
 palindrome :: String -> Bool
-palindrome = undefined
+palindrome [] =  True
+palindrome [_] = True
+palindrome (x:xs) = case reverse xs of
+                          [] -> True
+                          (y:ys) -> x == y && palindrome (init xs)
 
 {-
 
