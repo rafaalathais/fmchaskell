@@ -1,6 +1,9 @@
 {-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use foldr" #-}
+{-# HLINT ignore "Use infix" #-}
+{-# HLINT ignore "Use isAsciiUpper" #-}
+{-# HLINT ignore "Use map" #-}
 
 module FMCList where
 
@@ -15,6 +18,8 @@ import Prelude
 import qualified Prelude   as P
 import qualified Data.List as L
 import qualified Data.Char as C
+import Data.Char (toLower)
+import Text.Read (Lexeme(Char))
 
 {- import qualified ... as ... ?
 
@@ -144,12 +149,12 @@ takeWhile f (x:xs)
 dropWhile :: (b -> Bool) -> [b] -> [b]
 dropWhile _ [] = []
 dropWhile f (x:xs)
-  |f x = dropWhile y xs
+  |f x = dropWhile f xs
   |otherwise = x:xs
 
 tails :: [a] -> [[a]] --todas as caudas/rabos
 tails [] = [[]]
-tails (_:xs) = [xs] ++ tails (tail xs) 
+tails (_:xs) = xs :tails (tail xs) 
 
 init :: [a] -> [a]
 init [] = error "nil"
@@ -163,6 +168,7 @@ inits xs = inits (init xs) ++ [xs]
 
 subsequences :: [a] -> [[a]]
 subsequences [] = [[]]
+subsequences (x:xs) =  subsequences xs ++ map (x:) (subsequences xs)
 
 any :: (a -> Bool) -> [a] -> Bool
 any _ [] = False
@@ -186,12 +192,12 @@ concat (x:xs) = x ++ concat xs
 
 -- elem using the funciton 'any' above
 elem :: Eq a => a -> [a] -> Bool
-elem y (x:xs) = any (x==y) xs
+elem y = any (==y)
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
 elem' :: Eq a => a -> [a] -> Bool
-elem y (x:xs) = (y == x) || elem y xs
+elem' y (x:xs) = (y == x) || elem y xs
 
 (!!) :: [a] -> Int -> a
 [] !! _ = error "Nil"
@@ -209,7 +215,7 @@ map f [] = []
 map f (x:xs) = f x : map f xs
 
 cycle :: [a] -> [a]
-cycle = error "Nil"
+cycle []= error "Nil"
 cycle xs = xs ++ cycle xs
 
 repeat :: a -> [a]
@@ -226,9 +232,9 @@ isPrefixOf (x:xs) (y:ys) = (x==y) && isPrefixOf xs ys
 
 isInfixOf :: Eq a => [a] -> [a] -> Bool
 isInfixOf xs ys 
-  | lenght xs > length ys = False 
-  |isPrefiOf xs ys = True
-  |otherwise = isInfixOf xs (tails ys) -- vai para o proximo
+  |length xs > length ys = False 
+  |isPrefixOf xs ys = True
+  |otherwise = isInfixOf xs (tail ys) -- vai para o proximo
 
 isSuffixOf :: Eq a => [a] -> [a] -> Bool
 isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
@@ -237,7 +243,6 @@ zip :: [a] -> [b] -> [(a, b)]
 zip [] _ = []
 zip _ [] = []
 zip (x:xs) (y:ys) = (x,y):zip xs ys
-
 
 -- zipWith
 
@@ -256,24 +261,27 @@ splitAt _ [] = ([],[])
 -- what is the problem with the following?:
 -- splitAt n xs  =  (take n xs, drop n xs)
 
-break :: (a->Bool) -> [a] -> [a]
+break :: (a-> Bool) -> [a] -> ([a],[a])
 break _ [] = ([], [])
-
 
 -- lines
 -- words
 -- unlines
 -- unwords
 
--- transpose
+transpose :: [[a]] -> [[a]]
+transpose [] = []
+transpose ([]:_) = []
+transpose xs = map head xs : transpose (map tail xs)
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
+isAlpha:: Char -> Bool
+isAlpha c = elem c (['A' .. 'Z'] ++ ['a' .. 'z'])
+
 palindrome :: String -> Bool
 palindrome [] =  True
 palindrome [_] = True
-palindrome (x:xs) = case reverse xs of
-                          [] -> True
-                          (y:ys) -> x == y && palindrome (init xs)
+palindrome xs = map toLower (filter isAlpha xs) == reverse (map toLower (filter isAlpha xs))
 
 {-
 
